@@ -61,7 +61,8 @@ ${text}`
 
     const data = await response.json();
     const content = data.content[0].text;
-    const parsed = JSON.parse(content);
+    const clean = content.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
+const parsed = JSON.parse(clean);
     return res.status(200).json(parsed);
   } catch(e) {
     return res.status(500).json({ error: e.message });
