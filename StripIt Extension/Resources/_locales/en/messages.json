@@ -1,0 +1,10 @@
+{
+    "extension_name": {
+        "message": "Strip It for Safari",
+        "description": "The display name for the extension."
+    },
+    "extension_description": {
+        "message": "Strip the mess, read the rest — removes clutter, ads, and navigation for clean reading.",
+        "description": "Description of what the extension does."
+    }
+}

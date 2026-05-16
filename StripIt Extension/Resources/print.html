@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Clean Print</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, sans-serif; background: #1a1a1a; color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 40px; }
+    .card { background: #2a2a2a; border-radius: 16px; padding: 32px; max-width: 500px; width: 100%; text-align: center; }
+    .logo { font-size: 48px; margin-bottom: 16px; }
+    h1 { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+    .url { font-size: 12px; color: #666; margin-bottom: 24px; word-break: break-all; }
+    .btn { width: 100%; padding: 14px; border: none; border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer; margin-bottom: 10px; font-family: -apple-system, sans-serif; }
+    .btn-primary { background: #10B981; color: #1a1a1a; }
+    .btn-secondary { background: rgba(255,255,255,0.1); color: white; }
+    .status { font-size: 13px; color: #888; margin-top: 16px; line-height: 1.5; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo">🖨</div>
+    <h1>Clean Print v2</h1>
+    <div class="url" id="pageUrl">Loading...</div>
+    <button class="btn btn-primary" id="printBtn">🖨 Print This Page</button>
+    <button class="btn btn-secondary" id="closeBtn">✕ Close</button>
+    <div class="status" id="status"></div>
+  </div>
+
+  <script>
+    var pageUrl = null;
+    var pageTitle = null;
+
+    console.log("print.html loaded");
+    console.log("typeof browser:", typeof browser);
+    console.log("typeof chrome:", typeof chrome);
+
+    var api = (typeof chrome !== "undefined" && chrome.storage) ? chrome :
+              (typeof browser !== "undefined" && browser.storage) ? browser : null;
+
+    console.log("api available:", api !== null);
+
+    if (api) {
+      api.storage.local.get(["pendingPrintUrl", "pendingPrintTitle"], function(result) {
+        conso

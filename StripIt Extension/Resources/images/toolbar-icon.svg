@@ -1,0 +1,8 @@
+<svg viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+  <text x="22" y="100"
+        font-family="-apple-system, system-ui, sans-serif"
+        font-size="100" font-weight="900" fill="#000000">S</text>
+  <rect x="84" y="44" width="28" height="6" rx="3" fill="#000000"/>
+  <rect x="89" y="62" width="22" height="6" rx="3" fill="#000000"/>
+  <rect x="86" y="80" width="25" height="6" rx="3" fill="#000000"/>
+</svg>
