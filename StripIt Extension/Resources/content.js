@@ -7,62 +7,62 @@
      }
    });
 
-     function enterPrintModeDirectly() {
-       try {
-         const pageTitle = document.title;
-         const pageUrl = window.location.href;
-         const host = window.location.hostname;
+   function enterPrintModeDirectly() {
+     try {
+       const pageTitle = document.title;
+       const pageUrl = window.location.href;
+       const host = window.location.hostname;
 
-         if (host.includes("linkedin.com")) {
-           showLoadingBanner();
-           // Auto-scroll to bottom to load all content
-           autoScrollAndExtract(pageTitle, pageUrl);
-         } else {
-           setTimeout(() => {
-             const cleanContent = extractGenericArticle(pageTitle, pageUrl);
-             showPrintOverlay(cleanContent, pageTitle, pageUrl);
-           }, 1500);
-         }
-       } catch(e) {
-         alert("Strip It error: " + e.message);
+       if (host.includes("linkedin.com")) {
+         showLoadingBanner();
+         autoScrollAndExtract(pageTitle, pageUrl);
+       } else {
+         setTimeout(() => {
+           const cleanContent = extractGenericArticle(pageTitle, pageUrl);
+           showPrintOverlay(cleanContent, pageTitle, pageUrl);
+         }, 1500);
        }
+     } catch(e) {
+       alert("Strip It error: " + e.message);
      }
+   }
 
-     function autoScrollAndExtract(pageTitle, pageUrl) {
-       const banner = document.getElementById("strip-it-loading");
-       if (banner) {
-         banner.innerHTML = "⬇️ Scroll to bottom, then click here to Strip It!";
-         banner.style.cursor = "pointer";
-         banner.addEventListener("click", function() {
-           banner.innerHTML = "✂️ Stripping the mess...";
-           banner.style.cursor = "default";
-           setTimeout(() => {
-             const profileText = document.querySelector("main") ?
-               document.querySelector("main").innerText : document.body.innerText;
-             parseLinkedInWithAI(profileText, pageTitle, pageUrl);
-           }, 500);
-         }, { once: true });
-       }
+   function autoScrollAndExtract(pageTitle, pageUrl) {
+     const banner = document.getElementById("strip-it-loading");
+     if (banner) {
+       banner.innerHTML = "⬇️ Scroll to bottom, then click here to Strip It!";
+       banner.style.cursor = "pointer";
+       banner.addEventListener("click", function() {
+         banner.innerHTML = "✂️ Stripping the mess...";
+         banner.style.cursor = "default";
+         setTimeout(() => {
+           const profileText = document.querySelector("main") ?
+             document.querySelector("main").innerText : document.body.innerText;
+           parseLinkedInWithAI(profileText, pageTitle, pageUrl);
+         }, 500);
+       }, { once: true });
      }
-     function showLoadingBanner() {
-       const existing = document.getElementById("strip-it-loading");
-       if (existing) existing.remove();
-       const banner = document.createElement("div");
-       banner.id = "strip-it-loading";
-       banner.style.cssText = `
-         position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-         background: #1a1a1a; padding: 28px 40px;
-         display: flex; gap: 16px;
-         align-items: center; justify-content: center;
-         z-index: 2147483647;
-         box-shadow: 0 8px 40px rgba(0,0,0,0.6); border-radius: 20px;
-         white-space: nowrap; font-family: -apple-system, sans-serif;
-         color: #10B981; font-size: 20px; font-weight: 700;
-         cursor: pointer;
-       `;
-       banner.innerHTML = "✂️ Stripping the mess...";
-       document.body.appendChild(banner);
-     }
+   }
+
+   function showLoadingBanner() {
+     const existing = document.getElementById("strip-it-loading");
+     if (existing) existing.remove();
+     const banner = document.createElement("div");
+     banner.id = "strip-it-loading";
+     banner.style.cssText = `
+       position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+       background: #1a1a1a; padding: 28px 40px;
+       display: flex; gap: 16px;
+       align-items: center; justify-content: center;
+       z-index: 2147483647;
+       box-shadow: 0 8px 40px rgba(0,0,0,0.6); border-radius: 20px;
+       white-space: nowrap; font-family: -apple-system, sans-serif;
+       color: #10B981; font-size: 20px; font-weight: 700;
+       cursor: pointer;
+     `;
+     banner.innerHTML = "✂️ Stripping the mess...";
+     document.body.appendChild(banner);
+   }
 
    async function parseLinkedInWithAI(profileText, pageTitle, pageUrl) {
      try {
@@ -90,7 +90,6 @@
 
    function renderLinkedInProfile(profile, pageUrl) {
      const html = [];
-
      html.push(`<div class="print-header">`);
      html.push(`<div class="print-name">${profile.name || ""}</div>`);
      if (profile.headline) html.push(`<div class="print-headline">${profile.headline}</div>`);
@@ -98,11 +97,9 @@
      html.push(`<div class="print-url">${pageUrl}</div>`);
      html.push(`<div class="print-date">Printed ${new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}</div>`);
      html.push(`</div>`);
-
      if (profile.about) {
        html.push(`<h2>About</h2><p>${profile.about}</p>`);
      }
-
      if (profile.experience && profile.experience.length > 0) {
        html.push(`<h2>Experience</h2>`);
        profile.experience.forEach(job => {
@@ -117,7 +114,6 @@
          html.push(`</div>`);
        });
      }
-
      if (profile.education && profile.education.length > 0) {
        html.push(`<h2>Education</h2>`);
        profile.education.forEach(edu => {
@@ -129,11 +125,9 @@
          html.push(`</div>`);
        });
      }
-
      if (profile.skills && profile.skills.length > 0) {
        html.push(`<h2>Skills</h2><p>${profile.skills.join(" · ")}</p>`);
      }
-
      return html.join("\n");
    }
 
@@ -163,8 +157,10 @@
          .print-url { font-family: -apple-system, sans-serif; font-size: 9pt; color: #666; }
          .print-date { font-family: -apple-system, sans-serif; font-size: 9pt; color: #666; margin-top: 2px; }
          @media print {
+           body > *:not(#clean-print-overlay) { display: none !important; }
+           #clean-print-overlay { position: static !important; overflow: visible !important; background: white !important; }
            #clean-print-toolbar { display: none !important; }
-           #clean-print-content { padding-top: 24px !important; }
+           #clean-print-content { padding: 24px !important; }
          }
        </style>
      `;
@@ -245,13 +241,28 @@
      const el = candidates.find(c => c !== null);
      if (!el) { html.push(`<p>Could not extract article content.</p>`); return html.join("\n"); }
      const clone = el.cloneNode(true);
-     const clutter = ["nav","header","footer","aside","figure",'[class*="nav"]','[class*="menu"]','[class*="sidebar"]','[class*="banner"]','[class*="cookie"]','[class*="popup"]','[class*="modal"]','[class*="subscribe"]','[class*="newsletter"]','[class*="social"]','[class*="share"]','[class*="related"]','[class*="comment"]','[class*="footer"]','[class*="promo"]','[class*="recommended"]','[class*="trending"]','[id*="nav"]','[id*="menu"]','[id*="sidebar"]',"script","style","iframe","video","button","form","svg"];
+     const clutter = [
+       "nav","header","footer","aside","figure",
+       '[class*="nav"]','[class*="menu"]','[class*="sidebar"]','[class*="banner"]',
+       '[class*="cookie"]','[class*="popup"]','[class*="modal"]','[class*="subscribe"]',
+       '[class*="newsletter"]','[class*="social"]','[class*="share"]','[class*="related"]',
+       '[class*="comment"]','[class*="footer"]','[class*="promo"]','[class*="recommended"]',
+       '[class*="trending"]','[id*="nav"]','[id*="menu"]','[id*="sidebar"]',
+       '[class*="ad-"]','[class*="-ad"]','[class*="advert"]','[class*="sponsor"]',
+       '[class*="native-ad"]','[class*="native_ad"]','[id*="ad-"]','[data-ad]',
+       '[class*="paywall"]','[class*="byline"]','[class*="author-bio"]',
+       '.duet--ad-collection','.duet--newsletter','.duet--card','.c-native-ad',
+       "script","style","iframe","video","button","form","svg"
+     ];
      clutter.forEach(s => clone.querySelectorAll(s).forEach(e => e.remove()));
-     const paragraphs = clone.querySelectorAll("p, h1, blockquote");
+     const paragraphs = clone.querySelectorAll("p, h1, h2, h3, h4, blockquote");
+     const seen = new Set();
      if (paragraphs.length > 0) {
        paragraphs.forEach(p => {
          const text = p.innerText.trim();
          if (text.length < 20) return;
+         if (seen.has(text)) return;
+         seen.add(text);
          const tag = p.tagName.toLowerCase();
          if (tag === "p") html.push(`<p>${text}</p>`);
          else if (tag.match(/h[1-4]/)) html.push(`<h2>${text}</h2>`);
