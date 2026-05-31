@@ -14,7 +14,7 @@ export default async function handler(req, res) {
   try {
     const { text } = req.body;
     if (!text) return res.status(400).json({ error: "No text provided" });
-    const pageText = String(text).slice(0, 16000);
+    const pageText = String(text).slice(0, 120000);
 
     const response = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
