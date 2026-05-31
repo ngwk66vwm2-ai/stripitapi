@@ -14,7 +14,26 @@ export default async function handler(req, res) {
   try {
     const { text } = req.body;
     if (!text) return res.status(400).json({ error: "No text provided" });
+    const mode = (req.body && req.body.mode) === "lecture" ? "lecture" : "default";
     const pageText = String(text).slice(0, 120000);
+
+    const defaultPrompt = `Summarize the following web page in 3-5 sentences. Be concise, accurate, and capture the main point. Don't editorialize. Don't add introductions like "This article..." — just deliver the summary.\n\nPage text:\n${pageText}`;
+
+    const lecturePrompt = `You are creating detailed study notes from a lecture transcript for a student preparing for an exam. Produce thorough, well-organized notes that capture ALL substantive content.
+
+Requirements:
+- Organize into clear sections with short headings, each heading on its own line starting with "## ".
+- Under each heading, use concise bullet points starting with "- ".
+- Capture every important topic, concept, definition, legal rule, and especially any COURT CASES mentioned (include the case name and what it established or why it matters).
+- Include any procedures, tests, distinctions, exceptions, and exam-relevant points.
+- Leave out filler: greetings, scheduling/logistics chatter, tangents, and repetition.
+- Be accurate to the transcript. Do not invent cases or facts. Auto-generated transcripts may misspell names — preserve them as given.
+- Do NOT add a top-level title or a "Summary" heading; start directly with the first "## " section.
+
+Lecture transcript:
+${pageText}`;
+
+    const prompt = mode === "lecture" ? lecturePrompt : defaultPrompt;
 
     const response = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
@@ -25,10 +44,10 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         model: "claude-haiku-4-5-20251001",
-        max_tokens: 1024,
+        max_tokens: 4096,
         messages: [{
           role: "user",
-          content: `Summarize the following web page in 3-5 sentences. Be concise, accurate, and capture the main point. Don't editorialize. Don't add introductions like "This article..." — just deliver the summary.\n\nPage text:\n${pageText}`
+          content: prompt
         }]
       })
     });
