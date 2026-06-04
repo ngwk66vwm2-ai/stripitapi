@@ -1,3 +1,5 @@
+import { checkRateLimit } from "./_ratelimit.js";
+
 export default async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
@@ -11,6 +13,11 @@ export default async function handler(req, res) {
   const providedKey = req.headers["x-stripit-key"];
   if (!expectedKey || !providedKey || providedKey !== expectedKey) {
     return res.status(401).json({ error: "Unauthorized" });
+  }
+
+  const { allowed } = await checkRateLimit(req);
+  if (!allowed) {
+    return res.status(429).json({ error: "Rate limit exceeded. Please try again later." });
   }
 
   if (req.method !== "POST") {
