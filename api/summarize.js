@@ -1,10 +1,16 @@
 export default async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, x-stripit-key");
 
   if (req.method === "OPTIONS") {
     return res.status(200).end();
+  }
+
+  const expectedKey = process.env.STRIPIT_SHARED_SECRET;
+  const providedKey = req.headers["x-stripit-key"];
+  if (!expectedKey || !providedKey || providedKey !== expectedKey) {
+    return res.status(401).json({ error: "Unauthorized" });
   }
 
   if (req.method !== "POST") {
