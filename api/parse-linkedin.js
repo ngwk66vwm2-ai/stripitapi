@@ -37,7 +37,7 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         model: "claude-haiku-4-5-20251001",
-        max_tokens: 1024,
+        max_tokens: 4096,
         messages: [{
           role: "user",
           content: `Parse this LinkedIn profile text and return ONLY a JSON object with this structure, no other text:
@@ -73,10 +73,22 @@ ${text}`
     });
 
     const data = await response.json();
+
+    if (!data.content || !data.content[0] || !data.content[0].text) {
+      return res.status(502).json({ error: "Could not read the AI response. Please try again or report it." });
+    }
+    if (data.stop_reason === "max_tokens") {
+      return res.status(400).json({ error: "This profile is too long to process. Try a shorter profile or report it." });
+    }
+
     const content = data.content[0].text;
     const clean = content.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
-const parsed = JSON.parse(clean);
-    return res.status(200).json(parsed);
+    try {
+      const parsed = JSON.parse(clean);
+      return res.status(200).json(parsed);
+    } catch (parseErr) {
+      return res.status(502).json({ error: "Could not parse the profile data. Please try again or report it." });
+    }
   } catch(e) {
     return res.status(500).json({ error: e.message });
   }
